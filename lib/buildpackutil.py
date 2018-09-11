@@ -55,12 +55,18 @@ def get_database_config(development_mode=False):
         'DatabaseName': match.group('dbname'),
     }
 
+    logging.info('DatabaseUserName : ' + config.DatabaseUserName)
+
     if 'extra' in match.groupdict() and match.group('extra'):
         extra = match.group('extra').lstrip('?')
         jdbc_params = parse_qs(extra)
         if 'sslmode' in jdbc_params:
             sslmode = jdbc_params['sslmode']
             if sslmode and sslmode[0] == 'require':
+                config.update({'DatabaseUseSsl': True})
+        if 'ssl' in jdbc_params:
+            ssl = jdbc_params['ssl']
+            if ssl and sslmode[0] == 'true':
                 config.update({'DatabaseUseSsl': True})
 
     if development_mode:
